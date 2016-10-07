@@ -1,40 +1,40 @@
-typedef vector<int> IVec;
-typedef unordered_map<int, int> IMap;
+typedef unordered_multimap<int, int> IMap;
+typedef IMap::iterator IMAPI;
+typedef vector<IMAPI> IVec;
 
-class RandomizedSet {
+class RandomizedCollection {
 private:
   IMap m;
   IVec v;
 public:
     /** Initialize your data structure here. */
-    RandomizedSet() {
+    RandomizedCollection() {
         srand(NULL);
     }
 
     /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
     bool insert(int val) {
-        if (m.find(val) != m.end()) return false;
-        v.push_back(val);
-        m.insert(make_pair(val, v.size() - 1));
-        return true;
+        bool r = m.find(val) == m.end() ? true : false;
+        v.push_back(m.insert(make_pair(val, v.size())));
+        return r;
     }
 
     /** Removes a value from the set. Returns true if the set contained the specified element. */
     bool remove(int val) {
-        if (m.find(val) == m.end()) return false;
-        auto idx = m[val];
-        if (idx != v.size() - 1) {
-            m[v.back()] = idx;
-            v[idx] = v.back();
+        auto itr = m.find(val);
+        if (itr == m.end()) return false;
+        if (itr->second + 1 != v.size()) {
+            v.back()->second = itr->second;
+            v[itr->second] = v.back();
         }
         v.pop_back();
-        m.erase(val);
+        m.erase(itr);
         return true;
     }
 
     /** Get a random element from the set. */
     int getRandom() {
-        return v[rand() % v.size()];
+        return v[rand() % v.size()]->first;
     }
 };
 
