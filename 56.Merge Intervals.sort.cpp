@@ -9,26 +9,21 @@
  */
 class Solution {
 public:
-    vector<Interval> merge(vector<Interval>& intervals) {
-        vector<Interval> res;
-        if (intervals.size() == 0) return res;
-        
-        vector<Interval> sorted = intervals;
-        Interval *s = nullptr;
-        sort(sorted.begin(), sorted.end(), [](Interval a, Interval b) {
-            return a.start < b.start;
-        });
-        s = &sorted[0];
-        for (int i = 1, j = sorted.size(); i < j; ++i) {
-            if (s->end >= sorted[i].start) s->end = s->end > sorted[i].end ? s->end : sorted[i].end;
-            else {
-                res.push_back(*s);
-                s = &sorted[i];
-            }
-        }
-        if (s) res.push_back(*s);
-        return res;
+  vector<Interval> merge(vector<Interval>& intervals) {
+    if (intervals.empty()) return {};
+    vector<Interval> res;
+    sort(intervals.begin(), intervals.end(), [](Interval a, Interval b) {
+        return a.start < b.start;
+      });
+    res.push_back(intervals.front());
+    for (auto & i : intervals) {
+      auto &b = res.back();
+      if (i.start <= b.end) {
+        b.end = max(i.end, b.end);
+      } else {
+        res.push_back(i);
+      }
     }
+    return res;
+  }
 };
-
-// 584ms 51%
